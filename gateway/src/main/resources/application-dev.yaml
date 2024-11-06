@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    gateway:
+        mvc:
+            routes:
+            -   id: statuses
+                uri: http://localhost:8081
+                predicates:
+                    - Path=/api/v1/statuses/**
+                filters:
+                    - StripPrefix=0
+            -   id: iam
+                uri: http://localhost:8080
+                predicates:
+                    - Path=/api/v1/**
+                filters:
+                    - StripPrefix=0
