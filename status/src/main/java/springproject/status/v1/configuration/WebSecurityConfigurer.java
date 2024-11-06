@@ -1,4 +1,4 @@
-package springproject.iam.v1.configuration;
+package springproject.status.v1.configuration;
 
 import javax.crypto.spec.SecretKeySpec;
 import lombok.AccessLevel;
@@ -8,7 +8,6 @@ import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,10 +18,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import springproject.iam.v1.exception.OauthResourceJwtAuthenticationEntryPoint;
+import springproject.status.v1.exception.OauthResourceJwtAuthenticationEntryPoint;
 
 @EnableWebSecurity
-@EnableMethodSecurity
 @Configuration
 @CrossOrigin
 @RequiredArgsConstructor
@@ -30,11 +28,7 @@ import springproject.iam.v1.exception.OauthResourceJwtAuthenticationEntryPoint;
 public class WebSecurityConfigurer {
   @NonFinal
   String[] publicEndpoints = {
-    "/api/v1/auth/sign-in",
-    "/api/v1/auth/sign-up",
-    "/api/v1/privileges/**",
-    "/api/v1/roles/**",
-    "/api/v1/users/**"
+    "/api/v1/statuses",
   };
 
   @NonFinal
