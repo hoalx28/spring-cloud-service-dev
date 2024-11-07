@@ -1,6 +1,7 @@
-package springproject.gateway.v1.response;
+package springproject.shared.v1.response;
 
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

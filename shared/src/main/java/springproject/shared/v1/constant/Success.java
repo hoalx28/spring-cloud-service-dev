@@ -1,10 +1,11 @@
-package springproject.gateway.v1.constant;
+package springproject.shared.v1.constant;
+
+import org.springframework.http.HttpStatus;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor

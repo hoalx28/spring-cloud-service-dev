@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import springproject.gateway.v1.constant.Failed;
+import springproject.shared.v1.constant.Failed;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

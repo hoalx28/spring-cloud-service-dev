@@ -1,18 +1,9 @@
 package springproject.gateway.v1.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException.FeignClientException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,17 +12,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import springproject.gateway.v1.constant.Failed;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import feign.FeignException.FeignClientException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import springproject.gateway.v1.exception.GlobalException;
 import springproject.gateway.v1.exception.ServiceException;
-import springproject.gateway.v1.response.Response;
 import springproject.gateway.v1.service.iam.IamServiceClient;
+import springproject.shared.v1.constant.Failed;
+import springproject.shared.v1.response.Response;
 
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationFilter extends OncePerRequestFilter {
-  @NonFinal List<String> publicEndpoints = List.of("/api/v1/auth/sign-in");
+  @NonFinal
+  List<String> publicEndpoints = List.of("/api/v1/auth/sign-in");
 
   IamServiceClient iamServiceClient;
 
@@ -50,8 +54,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       }
       String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
       String refreshTokenHeader = request.getHeader("X-REFRESH-TOKEN");
-      boolean isMissingTokenHeader =
-          StringUtils.isEmpty(authorizationHeader) || StringUtils.isEmpty(refreshTokenHeader);
+      boolean isMissingTokenHeader = StringUtils.isEmpty(authorizationHeader)
+          || StringUtils.isEmpty(refreshTokenHeader);
       if (isMissingTokenHeader) {
         Failed unauthorized = Failed.TOKEN_HEADER_MISSING;
         immediatelyTerminate(
@@ -60,8 +64,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
       }
       String accessToken = authorizationHeader.replace("Bearer ", "");
       String refreshToken = refreshTokenHeader.replace("Bearer ", "");
-      ResponseEntity<Response<Boolean>> identityResponse =
-          iamServiceClient.identity(accessToken, refreshToken);
+      ResponseEntity<Response<Boolean>> identityResponse = iamServiceClient.identity(accessToken, refreshToken);
       boolean isAuthenticated = identityResponse.getBody().getPayload();
       if (!isAuthenticated) {
         GlobalException unauthorized = GlobalException.IDENTITY_NOT_VERIFY;
@@ -107,12 +110,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     ObjectMapper objectMapper = new ObjectMapper();
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setStatus(httpStatus.value());
-    Response<Object> resp =
-        Response.builder()
-            .code(code)
-            .message(message)
-            .timestamp(System.currentTimeMillis())
-            .build();
+    Response<Object> resp = Response.builder()
+        .code(code)
+        .message(message)
+        .timestamp(System.currentTimeMillis())
+        .build();
     response.getWriter().write(objectMapper.writeValueAsString(resp));
     response.flushBuffer();
   }

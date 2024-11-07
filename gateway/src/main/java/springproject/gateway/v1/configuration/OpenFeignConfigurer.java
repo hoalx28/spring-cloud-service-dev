@@ -1,26 +1,29 @@
 package springproject.gateway.v1.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.RequestInterceptor;
-import feign.RequestTemplate;
-import feign.codec.ErrorDecoder;
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import springproject.gateway.v1.constant.Failed;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import feign.codec.ErrorDecoder;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import springproject.gateway.v1.exception.ServiceException;
-import springproject.gateway.v1.response.PagingResponse;
+import springproject.shared.v1.constant.Failed;
+import springproject.shared.v1.response.PagingResponse;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -55,8 +58,7 @@ public class OpenFeignConfigurer implements ErrorDecoder, RequestInterceptor {
 
   @Override
   public void apply(RequestTemplate template) {
-    HttpServletRequest request =
-        ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     String refreshTokenHeader = request.getHeader("X-REFRESH-TOKEN");
     if (StringUtils.isNotBlank(authorizationHeader)) {
