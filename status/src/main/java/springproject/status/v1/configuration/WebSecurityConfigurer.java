@@ -5,6 +5,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import springproject.status.v1.exception.OauthResourceJwtAuthenticationEntryPoint;
 
+@EnableMethodSecurity
 @EnableWebSecurity
 @Configuration
 @CrossOrigin
@@ -30,7 +32,7 @@ import springproject.status.v1.exception.OauthResourceJwtAuthenticationEntryPoin
 public class WebSecurityConfigurer {
   @NonFinal
   String[] publicEndpoints = {
-      "/**",
+      "/api/v1/statuses/**",
   };
 
   @NonFinal

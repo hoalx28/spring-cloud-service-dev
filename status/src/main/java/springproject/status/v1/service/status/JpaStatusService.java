@@ -1,11 +1,8 @@
 package springproject.status.v1.service.status;
 
-import feign.FeignException;
 import java.util.List;
 import java.util.Optional;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatusCode;
@@ -13,7 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import springproject.status.v1.client.user.UserServiceClient;
+
+import feign.FeignException;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import springproject.status.v1.constant.Failed;
 import springproject.status.v1.exception.ServiceException;
 import springproject.status.v1.mapper.struct.StatusMapper;
@@ -26,6 +27,7 @@ import springproject.status.v1.repository.status.JpaStatusRepository;
 import springproject.status.v1.response.MultiResource;
 import springproject.status.v1.response.Paging;
 import springproject.status.v1.response.Response;
+import springproject.status.v1.service.user.UserServiceClient;
 
 @Service
 @RequiredArgsConstructor
@@ -48,8 +50,7 @@ public class JpaStatusService implements AbstractStatusService {
   public StatusResponse save(StatusCreation creation) {
     try {
       this.ensureNotExistedByContent(creation.getContent());
-      ResponseEntity<Response<UserResponse>> userQueriedResponse =
-          userServiceClient.findById(creation.getUserId());
+      ResponseEntity<Response<UserResponse>> userQueriedResponse = userServiceClient.findById(creation.getUserId());
       HttpStatusCode userQueriedStatusCode = userQueriedResponse.getStatusCode();
       if (userQueriedStatusCode.isError()) {
         throw new ServiceException(Failed.OWNING_SIDE_NOT_EXISTS);
@@ -126,8 +127,7 @@ public class JpaStatusService implements AbstractStatusService {
   public MultiResource<StatusResponse> findAllByContentContains(
       String content, int page, int size) {
     try {
-      Page<Status> pageable =
-          jpaStatusRepository.findAllByContentContains(content, PageRequest.of(page, size));
+      Page<Status> pageable = jpaStatusRepository.findAllByContentContains(content, PageRequest.of(page, size));
       List<StatusResponse> values = statusMapper.asCollectionResponse(pageable.getContent());
       if (CollectionUtils.isEmpty(values)) {
         throw new ServiceException(Failed.FIND_ALL_BY_NO_CONTENT);

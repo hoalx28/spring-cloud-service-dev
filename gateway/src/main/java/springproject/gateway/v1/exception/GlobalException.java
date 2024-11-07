@@ -28,7 +28,12 @@ public enum GlobalException {
   UNAUTHORIZED(
       1,
       "ill legal token: token has been edited, expired or not publish by us.",
-      HttpStatus.UNAUTHORIZED);
+      HttpStatus.UNAUTHORIZED),
+
+  COMMUNICATION_ESTABLISHED(
+      1,
+      "communication not established: down-stream service can not be available.",
+      HttpStatus.SERVICE_UNAVAILABLE);
 
   int code;
   String message;
