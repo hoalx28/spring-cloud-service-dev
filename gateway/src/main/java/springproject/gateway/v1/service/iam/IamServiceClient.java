@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import springproject.gateway.v1.configuration.OpenFeignConfigurer;
 import springproject.shared.v1.response.Response;
 
-@FeignClient(name = "iam", url = "http://localhost:8080/api/v1", configuration = { OpenFeignConfigurer.class })
+@FeignClient(name = "iam", configuration = { OpenFeignConfigurer.class })
 public interface IamServiceClient {
 
     @PostMapping("/auth/identity")
