@@ -1,20 +1,19 @@
 package springproject.status.v1.service.status;
 
+import feign.FeignException;
 import java.util.List;
 import java.util.Optional;
-
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import feign.FeignException;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import springproject.status.v1.constant.Failed;
 import springproject.status.v1.exception.ServiceException;
 import springproject.status.v1.mapper.struct.StatusMapper;
@@ -50,9 +49,10 @@ public class JpaStatusService implements AbstractStatusService {
   public StatusResponse save(StatusCreation creation) {
     try {
       this.ensureNotExistedByContent(creation.getContent());
-      ResponseEntity<Response<UserResponse>> userQueriedResponse = userServiceClient.findById(creation.getUserId());
-      HttpStatusCode userQueriedStatusCode = userQueriedResponse.getStatusCode();
-      if (userQueriedStatusCode.isError()) {
+      ResponseEntity<Response<UserResponse>> owningQueriedResponse =
+          userServiceClient.findById(creation.getUserId());
+      HttpStatusCode userQueriedStatusCode = owningQueriedResponse.getStatusCode();
+      if (userQueriedStatusCode.isSameCodeAs(HttpStatus.NO_CONTENT)) {
         throw new ServiceException(Failed.OWNING_SIDE_NOT_EXISTS);
       }
       Status model = statusMapper.asModel(creation);
@@ -74,7 +74,15 @@ public class JpaStatusService implements AbstractStatusService {
       if (!queried.isPresent()) {
         throw new ServiceException(Failed.FIND_BY_ID_NO_CONTENT);
       }
+      ResponseEntity<Response<UserResponse>> owningQueriedResponse =
+          userServiceClient.findById(queried.get().getUserId());
+      HttpStatusCode userQueriedStatusCode = owningQueriedResponse.getStatusCode();
+      if (userQueriedStatusCode.isSameCodeAs(HttpStatus.NO_CONTENT)) {
+        throw new ServiceException(Failed.OWNING_SIDE_NOT_EXISTS);
+      }
       StatusResponse response = statusMapper.asResponse(queried.get());
+      UserResponse owning = owningQueriedResponse.getBody().getPayload();
+      response.setUser(owning);
       return response;
     } catch (ServiceException e) {
       throw e;
@@ -127,7 +135,8 @@ public class JpaStatusService implements AbstractStatusService {
   public MultiResource<StatusResponse> findAllByContentContains(
       String content, int page, int size) {
     try {
-      Page<Status> pageable = jpaStatusRepository.findAllByContentContains(content, PageRequest.of(page, size));
+      Page<Status> pageable =
+          jpaStatusRepository.findAllByContentContains(content, PageRequest.of(page, size));
       List<StatusResponse> values = statusMapper.asCollectionResponse(pageable.getContent());
       if (CollectionUtils.isEmpty(values)) {
         throw new ServiceException(Failed.FIND_ALL_BY_NO_CONTENT);

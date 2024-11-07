@@ -63,6 +63,7 @@ public class JpaUserService implements AbstractUserService {
   public UserResponse findById(Long id) {
     try {
       Optional<User> queried = jpaUserRepository.findById(id);
+      System.out.println("queried = " + queried.empty());
       if (!queried.isPresent()) {
         throw new ServiceException(Failed.FIND_BY_ID_NO_CONTENT);
       }

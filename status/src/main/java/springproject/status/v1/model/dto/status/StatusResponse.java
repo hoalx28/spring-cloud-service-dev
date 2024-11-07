@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import springproject.status.v1.model.dto.user.UserResponse;
 
 @Data
 @NoArgsConstructor
@@ -13,4 +14,6 @@ import lombok.experimental.FieldDefaults;
 public class StatusResponse {
   Long id;
   String content;
+
+  UserResponse user;
 }

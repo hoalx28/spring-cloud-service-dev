@@ -1,21 +1,18 @@
 package springproject.iam.v1.service.auth;
 
+import com.nimbusds.jwt.SignedJWT;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
-
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
-
-import com.nimbusds.jwt.SignedJWT;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import springproject.iam.v1.constant.Failed;
 import springproject.iam.v1.exception.ServiceException;
 import springproject.iam.v1.mapper.struct.AuthMapper;
@@ -60,9 +57,11 @@ public class NimbusJwtAuthService implements AbstractJwtAuthService {
   public CredentialResponse newCredentials(UserResponse user) {
     String accessId = UUID.randomUUID().toString();
     String refreshId = UUID.randomUUID().toString();
-    String accessToken = jwtAuthProvider.sign(user, accessTokenTimeToLive, accessTokenSecret, accessId, refreshId);
+    String accessToken =
+        jwtAuthProvider.sign(user, accessTokenTimeToLive, accessTokenSecret, accessId, refreshId);
     long accessTokenIssuedAt = System.currentTimeMillis();
-    String refreshToken = jwtAuthProvider.sign(user, refreshTokenTimeToLive, refreshTokenSecret, refreshId, accessId);
+    String refreshToken =
+        jwtAuthProvider.sign(user, refreshTokenTimeToLive, refreshTokenSecret, refreshId, accessId);
     long refreshTokenIssuedAt = System.currentTimeMillis();
     return new CredentialResponse(
         accessToken, accessTokenIssuedAt, refreshToken, refreshTokenIssuedAt);
@@ -148,9 +147,10 @@ public class NimbusJwtAuthService implements AbstractJwtAuthService {
   @Override
   public long signOut() {
     try {
-      String accessToken = ((JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication())
-          .getToken()
-          .getTokenValue();
+      String accessToken =
+          ((JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication())
+              .getToken()
+              .getTokenValue();
       BadCredentialCreation creation = this.asBadCredentialCreation(accessToken);
       BadCredentialResponse saved = jpaBadCredentialService.save(creation);
       return saved.getId();
